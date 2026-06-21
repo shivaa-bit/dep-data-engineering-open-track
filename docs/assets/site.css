@@ -993,6 +993,32 @@ h3 {
   margin-top: 3px;
 }
 
+.team-group li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.volunteer-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(201, 146, 42, 0.2);
+  flex-shrink: 0;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.team-group li:hover .volunteer-photo {
+  border-color: var(--gold);
+  transform: scale(1.05);
+}
+
+.volunteer-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .faq-list {
   display: flex;
   flex-direction: column;
