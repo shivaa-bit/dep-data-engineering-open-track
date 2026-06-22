@@ -424,13 +424,29 @@ function renderAll() {
   document.getElementById('queue-all').innerHTML         = buildTable(allIssues,   'all');
 }
 
+async function fetchEnrolled() {
+  try {
+    const res  = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/main/.github/enrolled-participants.json`);
+    const data = await res.json();
+    return new Set((data.participants || []).map(u => u.toLowerCase()));
+  } catch (_) {
+    return null;
+  }
+}
+
 async function fetchAll() {
+  const enrolled = await fetchEnrolled();
+
   let issues = [], page = 1;
   while (true) {
     const res   = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/issues?labels=milestone-submission&state=open&per_page=100&page=${page}`);
     const batch = await res.json();
     if (!Array.isArray(batch) || !batch.length) break;
-    issues = issues.concat(batch.filter(i => !i.pull_request));
+    let filtered = batch.filter(i => !i.pull_request);
+    if (enrolled) {
+      filtered = filtered.filter(i => enrolled.has(i.user.login.toLowerCase()));
+    }
+    issues = issues.concat(filtered);
     if (batch.length < 100) break;
     page++;
   }
